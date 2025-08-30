@@ -1,0 +1,25 @@
+# Models (too large for git)
+models/*.pth
+models/*.pkl
+
+# Data files
+data/input_video.mp4
+data/new_audio.wav
+output/
+download_model.py
+
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+
+#ENV
+.venv
+requirement.txt
+
