@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lip Sync API - Demo Interface</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 2px dashed #ddd;
+            border-radius: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: #667eea;
+        }
+
+        .upload-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .upload-section h3::before {
+            content: "📁";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .file-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .paragraph-text {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-style: italic;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .process-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 30px;
+        }
+
+        .process-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .process-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .status-section.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .status-message {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .api-info {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .api-info h4 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .api-info p {
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Lip Sync API</h1>
+        <p class="subtitle">Audio Replacement with Lip Synchronization</p>
+        
+        <div class="api-info">
+            <h4>📋 Assignment Instructions</h4>
+            <p><strong>Input Video:</strong> Record yourself speaking Paragraph A clearly (10-15 seconds)<br>
+            <strong>New Audio:</strong> Record yourself speaking Paragraph B clearly<br>
+            <strong>Output:</strong> Video with your lip movements synced to Paragraph B audio</p>
+        </div>
+
+        <div class="upload-section">
+            <h3>Input Video (Paragraph A)</h3>
+            <input type="file" id="videoFile" class="file-input" accept="video/*" required>
+            <div class="paragraph-text">
+                <strong>Paragraph A:</strong> "Today, I'm going to show you how machine learning can transform everyday tasks. Whether it's identifying objects in images or generating text from scratch, the possibilities are truly endless. Let's dive into some amazing examples together."
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <h3>New Audio (Paragraph B)</h3>
+            <input type="file" id="audioFile" class="file-input" accept="audio/*" required>
+            <div class="paragraph-text">
+                <strong>Paragraph B:</strong> "The quick brown fox jumps over the lazy dog while a curious cat watches from the rooftop. Suddenly, a loud bark sends the animals running in every direction — pure chaos ensues."
+            </div>
+        </div>
+
+        <button id="processBtn" class="process-btn" onclick="startProcessing()">
+            🚀 Start Lip Sync Processing
+        </button>
+
+        <div id="statusSection" class="status-section">
+            <div id="statusMessage" class="status-message">Processing...</div>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <div id="progressText">0%</div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <a id="downloadBtn" class="download-btn" style="display: none;">📥 Download Result</a>
+        </div>
+    </div>
+
+    <script>
+        let currentJobId = null;
+        let statusCheckInterval = null;
+        const API_BASE = 'http://localhost:8000';
+
+        async function startProcessing() {
+            const videoFile = document.getElementById('videoFile').files[0];
+            const audioFile = document.getElementById('audioFile').files[0];
+            
+            if (!videoFile || !audioFile) {
+                alert('Please select both video and audio files');
+                return;
+            }
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('input_video', videoFile);
+            formData.append('new_audio', audioFile);
+
+            // Update UI
+            document.getElementById('processBtn').disabled = true;
+            document.getElementById('processBtn').innerHTML = '⏳ Starting Processing... <div class="loading"></div>';
+            document.getElementById('statusSection').classList.add('show');
+            document.getElementById('statusMessage').textContent = 'Uploading files...';
+
+            try {
+                // Start processing
+                const response = await fetch(`${API_BASE}/process`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    currentJobId = result.job_id;
+                    document.getElementById('statusMessage').textContent = result.message;
+                    
+                    // Start polling for status
+                    statusCheckInterval = setInterval(checkStatus, 2000);
+                } else {
+                    throw new Error(result.detail || 'Processing failed');
+                }
+
+            } catch (error) {
+                showError(`Error starting processing: ${error.message}`);
+                resetUI();
+            }
+        }
+
+        async function checkStatus() {
+            if (!currentJobId) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/status/${currentJobId}`);
+                const status = await response.json();
+
+                document.getElementById('statusMessage').textContent = status.message;
+
+                if (status.progress !== undefined) {
+                    document.getElementById('progressFill').style.width = `${status.progress}%`;
+                    document.getElementById('progressText').textContent = `${Math.round(status.progress)}%`;
+                }
+
+                if (status.status === 'completed') {
+                    clearInterval(statusCheckInterval);
+                    document.getElementById('statusMessage').textContent = '✅ Processing completed successfully!';
+                    document.getElementById('downloadBtn').style.display = 'inline-block';
+                    document.getElementById('downloadBtn').href = `${API_BASE}/download/${currentJobId}`;
+                    resetUI();
+                } else if (status.status === 'failed') {
+                    clearInterval(statusCheckInterval);
+                    showError(`Processing failed: ${status.error}`);
+                    resetUI();
+                }
+
+            } catch (error) {
+                console.error('Error checking status:', error);
+                clearInterval(statusCheckInterval);
+                showError('Error checking processing status');
+                resetUI();
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function resetUI() {
+            document.getElementById('processBtn').disabled = false;
+            document.getElementById('processBtn').innerHTML = '🚀 Start Lip Sync Processing';
+        }
+
+        // File validation
+        document.getElementById('videoFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const validTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/mkv'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid video file (MP4, AVI, MOV, MKV)');
+                    e.target.value = '';
+                    return;
+                }
+                
+                // Check file size (max 100MB)
+                if (file.size > 100 * 1024 * 1024) {
+                    alert('Video file too large. Please select a file smaller than 100MB');
+                    e.target.value = '';
+                    return;
+                }
+            }
+        });
+
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const validTypes = ['audio/wav', 'audio/mp3', 'audio/mpeg', 'audio/m4a', 'audio/flac'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid audio file (WAV, MP3, M4A, FLAC)');
+                    e.target.value = '';
+                    return;
+                }
+                
+                // Check file size (max 50MB)
+                if (file.size > 50 * 1024 * 1024) {
+                    alert('Audio file too large. Please select a file smaller than 50MB');
+                    e.target.value = '';
+                    return;
+                }
+            }
+        });
+
+        // Check API status on page load
+        window.onload = async function() {
+            try {
+                const response = await fetch(`${API_BASE}/`);
+                const data = await response.json();
+                console.log('API Status:', data);
+            } catch (error) {
+                console.error('API not available:', error);
+                showError('⚠️ API server not available. Please ensure the FastAPI server is running on localhost:8000');
+            }
+        };
+    </script>
+</body>
+</html>
