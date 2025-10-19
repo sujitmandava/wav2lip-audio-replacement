@@ -6,6 +6,9 @@ models/*.pkl
 /models
 /outputs
 /uploads
+/Wav2Lip
+
+
 
 
 # Python
@@ -17,6 +20,7 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+app.log
 
 #ENV
 .venv
