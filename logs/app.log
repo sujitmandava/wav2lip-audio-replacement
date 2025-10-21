@@ -19428,3 +19428,19 @@ FileNotFoundError: [WinError 2] The system cannot find the file specified
 2025-09-01 21:58:23,362 [INFO] Mel spectrogram shape: (80, 1880), created 117 mel chunks
 2025-09-01 21:58:23,362 [INFO] Processing 156 keyframes with 117 mel chunks
 2025-09-01 21:58:28,059 [ERROR] Face detection failed for keyframe 0: [enforce fail at alloc_cpu.cpp:121] data. DefaultCPUAllocator: not enough memory: you tried to allocate 235929600 bytes.
+2025-10-21 10:35:07,525 [INFO] Starting job aefda103-1b0c-4b8e-af2c-851e446d0d25 with natural face preservation
+2025-10-21 10:35:07,526 [INFO] Loading GAN model on CPU...
+2025-10-21 10:35:08,086 [INFO] Attempting to load as PyTorch state dict...
+2025-10-21 10:35:09,225 [WARNING] PyTorch loading failed: , trying TorchScript...
+2025-10-21 10:35:09,595 [INFO] Successfully loaded TorchScript model
+2025-10-21 10:35:09,905 [INFO] All models loaded successfully!
+2025-10-21 10:35:09,954 [INFO] Extracting frames from: uploads/aefda103-1b0c-4b8e-af2c-851e446d0d25_video.mp4
+2025-10-21 10:35:12,609 [INFO] Extracted 468 total frames, 156 keyframes from 23.44s video at 19.96 FPS
+2025-10-21 10:35:12,620 [INFO] Preprocessing audio: uploads/aefda103-1b0c-4b8e-af2c-851e446d0d25_audio.mp3
+2025-10-21 10:35:18,381 [INFO] Processed audio length: 375060 samples at 16000 Hz
+2025-10-21 10:35:18,418 [INFO] Mel spectrogram shape: (80, 1876), created 117 mel chunks
+2025-10-21 10:35:18,419 [INFO] Processing 156 keyframes with 117 mel chunks
+2025-10-21 10:41:07,674 [INFO] Creating full video from 156 keyframes for 468 total frames
+2025-10-21 10:41:20,197 [INFO] Created full video with 468 frames
+2025-10-21 10:41:29,762 [INFO] FFmpeg merge successful
+2025-10-21 10:41:29,776 [INFO] Job aefda103-1b0c-4b8e-af2c-851e446d0d25 completed successfully with natural results!
