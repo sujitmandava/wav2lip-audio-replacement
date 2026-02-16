@@ -26,7 +26,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             padding: 40px;
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
         }
 
@@ -40,7 +40,7 @@
         .subtitle {
             text-align: center;
             color: #666;
-            margin-bottom: 40px;
+            margin-bottom: 24px;
             font-size: 1.1em;
         }
 
@@ -215,6 +215,88 @@
             margin-left: 10px;
         }
 
+        .realtime-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .realtime-actions .process-btn {
+            margin-top: 0;
+            font-size: 16px;
+            padding: 14px;
+        }
+
+        .toggle-btn {
+            margin-top: 0;
+            width: auto;
+            min-width: 170px;
+            padding: 10px 14px;
+            font-size: 14px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+        }
+
+        .toggle-btn.on {
+            background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+        }
+
+        .stop-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .realtime-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .realtime-number {
+            width: 120px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .realtime-text {
+            width: 100%;
+            min-height: 80px;
+            resize: vertical;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .realtime-checkbox {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .small-note {
+            color: #555;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .realtime-frame {
+            width: 100%;
+            margin-top: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            min-height: 180px;
+            max-height: 420px;
+            object-fit: contain;
+            background: #10161f;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -225,9 +307,13 @@
                 padding: 20px;
                 margin: 10px;
             }
-            
+
             h1 {
                 font-size: 2em;
+            }
+
+            .realtime-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -236,7 +322,7 @@
     <div class="container">
         <h1>🎭 Lip Sync API</h1>
         <p class="subtitle">Audio Replacement with Lip Synchronization</p>
-        
+
         <div class="api-info">
             <h4>📋 Assignment Instructions</h4>
             <p><strong>Input Video:</strong> Record yourself speaking Paragraph A clearly (10-15 seconds)<br>
@@ -256,7 +342,7 @@
             <h3>New Audio (Paragraph B)</h3>
             <input type="file" id="audioFile" class="file-input" accept="audio/*" required>
             <div class="paragraph-text">
-                <strong>Paragraph B:</strong> "The quick brown fox jumps over the lazy dog while a curious cat watches from the rooftop. Suddenly, a loud bark sends the animals running in every direction — pure chaos ensues."
+                <strong>Paragraph B:</strong> "The quick brown fox jumps over the lazy dog while a curious cat watches from the rooftop. Suddenly, a loud bark sends the animals running in every direction - pure chaos ensues."
             </div>
         </div>
 
@@ -273,35 +359,99 @@
             <div id="errorMessage" class="error-message" style="display: none;"></div>
             <a id="downloadBtn" class="download-btn" style="display: none;">📥 Download Result</a>
         </div>
+
+        <div class="upload-section">
+            <h3>Realtime (Static Avatar + TTS)</h3>
+            <input type="file" id="realtimeAvatarFile" class="file-input" accept="image/*">
+            <div class="realtime-row">
+                <label for="realtimeFps">FPS</label>
+                <input id="realtimeFps" class="realtime-number" type="number" min="5" max="30" step="1" value="15">
+            </div>
+            <div class="realtime-row">
+                <label class="realtime-checkbox" for="realtimePlayAudio">
+                    <input id="realtimePlayAudio" type="checkbox" checked>
+                    Play audio
+                </label>
+                <label class="realtime-checkbox" for="realtimeAutoSync">
+                    <input id="realtimeAutoSync" type="checkbox" checked>
+                    Auto sync
+                </label>
+                <label for="realtimeAudioDelayMs">Delay (ms)</label>
+                <input id="realtimeAudioDelayMs" class="realtime-number" type="number" min="0" max="1500" step="10" value="250">
+                <button id="realtimeAutoSyncToggle" class="process-btn toggle-btn on" type="button" onclick="toggleAutoSync()">Auto Sync: ON</button>
+            </div>
+            <div class="realtime-row">
+                <label class="realtime-checkbox" for="realtimeCpuAutoMode">
+                    <input id="realtimeCpuAutoMode" type="checkbox" checked>
+                    CPU Auto-Sync Mode
+                </label>
+                <span class="small-note">Preset: FPS 7, Delay 600ms, Rate 125, Head motion off during drift tuning.</span>
+            </div>
+            <div class="realtime-row">
+                <label class="realtime-checkbox" for="realtimeHeadMotion">
+                    <input id="realtimeHeadMotion" type="checkbox" checked>
+                    Head motion
+                </label>
+                <label for="realtimeHeadMotionStrength">Motion</label>
+                <input id="realtimeHeadMotionStrength" class="realtime-number" type="number" min="0" max="1.5" step="0.05" value="0.55">
+            </div>
+            <textarea id="realtimeTtsText" class="realtime-text" placeholder="Type text for avatar speech..."></textarea>
+            <div class="realtime-row">
+                <label for="realtimeTtsVoice">Voice</label>
+                <input id="realtimeTtsVoice" class="realtime-number" style="width: 180px;" type="text" placeholder="default">
+                <label for="realtimeTtsRate">Rate</label>
+                <input id="realtimeTtsRate" class="realtime-number" type="number" min="80" max="320" step="5" value="105">
+            </div>
+            <div class="small-note">Upload one face image, start realtime, then use TTS text as the speech input. Auto-sync keeps user speech rate fixed and matches frame pacing/delay.</div>
+            <div id="realtimeStatus" class="status-message" style="margin-top: 12px;">Realtime idle.</div>
+            <div class="realtime-actions">
+                <button id="startRealtimeBtn" class="process-btn" onclick="startRealtime()">▶️ Start Realtime</button>
+                <button id="stopRealtimeBtn" class="process-btn stop-btn" onclick="stopRealtime()" disabled>⏹️ Stop Realtime</button>
+            </div>
+            <div class="realtime-actions">
+                <button id="speakTextBtn" class="process-btn" onclick="speakTextToAvatar()" disabled>🗣️ Speak Text (TTS)</button>
+            </div>
+            <img id="realtimeFrame" class="realtime-frame" alt="Realtime generated frame stream">
+        </div>
     </div>
 
     <script>
         let currentJobId = null;
         let statusCheckInterval = null;
-        const API_BASE = 'http://localhost:8000';
+        const API_BASE = window.location.origin;
+
+        let realtimeSessionId = null;
+        let realtimeSocket = null;
+        let realtimeAudioContext = null;
+        let realtimeLastFrameUrl = null;
+        let realtimeTtsStreaming = false;
+        let realtimeFramesReceived = 0;
+        let realtimeFrameTimestamps = [];
+        let realtimeRequestedFps = 15;
+        let realtimeCpuPresetApplied = false;
+        let realtimeLastAdaptiveFpsChangeAt = 0;
+        let realtimeIdleLoopTask = null;
+        let realtimeIdleLoopToken = 0;
 
         async function startProcessing() {
             const videoFile = document.getElementById('videoFile').files[0];
             const audioFile = document.getElementById('audioFile').files[0];
-            
+
             if (!videoFile || !audioFile) {
                 alert('Please select both video and audio files');
                 return;
             }
 
-            // Prepare form data
             const formData = new FormData();
             formData.append('input_video', videoFile);
             formData.append('new_audio', audioFile);
 
-            // Update UI
             document.getElementById('processBtn').disabled = true;
             document.getElementById('processBtn').innerHTML = '⏳ Starting Processing... <div class="loading"></div>';
             document.getElementById('statusSection').classList.add('show');
             document.getElementById('statusMessage').textContent = 'Uploading files...';
 
             try {
-                // Start processing
                 const response = await fetch(`${API_BASE}/process`, {
                     method: 'POST',
                     body: formData
@@ -312,8 +462,6 @@
                 if (response.ok) {
                     currentJobId = result.job_id;
                     document.getElementById('statusMessage').textContent = result.message;
-                    
-                    // Start polling for status
                     statusCheckInterval = setInterval(checkStatus, 2000);
                 } else {
                     throw new Error(result.detail || 'Processing failed');
@@ -370,7 +518,623 @@
             document.getElementById('processBtn').innerHTML = '🚀 Start Lip Sync Processing';
         }
 
-        // File validation
+        function setRealtimeStatus(message) {
+            document.getElementById('realtimeStatus').textContent = message;
+        }
+
+        function setRealtimeButtons(active) {
+            document.getElementById('startRealtimeBtn').disabled = active;
+            document.getElementById('stopRealtimeBtn').disabled = !active;
+            document.getElementById('speakTextBtn').disabled = !active;
+        }
+
+        function isRealtimeSocketOpen() {
+            return !!realtimeSocket && realtimeSocket.readyState === WebSocket.OPEN;
+        }
+
+        function sleepMs(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function stopRealtimeIdleLoop() {
+            realtimeIdleLoopToken += 1;
+            realtimeIdleLoopTask = null;
+        }
+
+        function startRealtimeIdleLoop() {
+            if (!isRealtimeSocketOpen()) {
+                return null;
+            }
+
+            if (realtimeIdleLoopTask) {
+                return realtimeIdleLoopTask;
+            }
+
+            const token = ++realtimeIdleLoopToken;
+            const chunkMs = 40;
+            const chunkSamples = Math.max(1, Math.floor((16000 * chunkMs) / 1000));
+            const silentChunk = new Float32Array(chunkSamples);
+
+            realtimeIdleLoopTask = (async () => {
+                while (token === realtimeIdleLoopToken) {
+                    if (!isRealtimeSocketOpen()) {
+                        break;
+                    }
+
+                    if (!realtimeTtsStreaming) {
+                        try {
+                            realtimeSocket.send(silentChunk);
+                        } catch (error) {
+                            console.error('Realtime idle stream send failed:', error);
+                            break;
+                        }
+                    }
+
+                    await sleepMs(chunkMs);
+                }
+            })().finally(() => {
+                if (token === realtimeIdleLoopToken) {
+                    realtimeIdleLoopTask = null;
+                }
+            });
+
+            return realtimeIdleLoopTask;
+        }
+
+        function isCpuAutoSyncModeEnabled() {
+            const autoSync = document.getElementById('realtimeAutoSync').checked;
+            const cpuMode = document.getElementById('realtimeCpuAutoMode').checked;
+            return autoSync && cpuMode;
+        }
+
+        function updateAutoSyncUi() {
+            const autoSync = document.getElementById('realtimeAutoSync').checked;
+            const btn = document.getElementById('realtimeAutoSyncToggle');
+            if (!btn) {
+                return;
+            }
+            btn.textContent = `Auto Sync: ${autoSync ? 'ON' : 'OFF'}`;
+            btn.classList.toggle('on', autoSync);
+        }
+
+        function toggleAutoSync() {
+            const checkbox = document.getElementById('realtimeAutoSync');
+            checkbox.checked = !checkbox.checked;
+            updateAutoSyncUi();
+            if (isCpuAutoSyncModeEnabled()) {
+                realtimeCpuPresetApplied = false;
+                applyCpuAutoSyncPreset(true);
+            }
+        }
+
+        function applyCpuAutoSyncPreset(force = false) {
+            if (!document.getElementById('realtimeCpuAutoMode').checked) {
+                return;
+            }
+
+            const fpsInput = document.getElementById('realtimeFps');
+            const delayInput = document.getElementById('realtimeAudioDelayMs');
+            const rateInput = document.getElementById('realtimeTtsRate');
+            const headMotionInput = document.getElementById('realtimeHeadMotion');
+            const headMotionStrengthInput = document.getElementById('realtimeHeadMotionStrength');
+
+            let fps = Number(fpsInput.value || 7);
+            if (fps < 6 || fps > 8) {
+                fps = 7;
+                fpsInput.value = String(fps);
+            }
+
+            if (force || !realtimeCpuPresetApplied) {
+                delayInput.value = "600";
+                let rate = Number(rateInput.value || 125);
+                if (rate < 120 || rate > 140) {
+                    rate = 125;
+                }
+                rateInput.value = String(rate);
+                headMotionInput.checked = false;
+                headMotionStrengthInput.value = "0.25";
+                realtimeCpuPresetApplied = true;
+            }
+        }
+
+        function sendRealtimeConfigUpdate() {
+            if (!realtimeSocket || realtimeSocket.readyState !== WebSocket.OPEN) {
+                return;
+            }
+            const headMotion = document.getElementById('realtimeHeadMotion').checked;
+            const headMotionStrength = Number(document.getElementById('realtimeHeadMotionStrength').value || 0.55);
+            const fps = Number(document.getElementById('realtimeFps').value || realtimeRequestedFps || 7);
+            realtimeSocket.send(JSON.stringify({
+                type: 'config',
+                input_sample_rate: 16000,
+                fps: fps,
+                head_motion: headMotion,
+                head_motion_strength: headMotionStrength,
+            }));
+        }
+
+        async function createRealtimeSession(avatarFile, fps, inputSampleRate, headMotion, headMotionStrength) {
+            const form = new FormData();
+            form.append('avatar_image', avatarFile);
+            form.append('fps', String(fps));
+            form.append('input_sample_rate', String(inputSampleRate));
+            form.append('head_motion', String(Boolean(headMotion)));
+            form.append('head_motion_strength', String(Number(headMotionStrength)));
+
+            const response = await fetch(`${API_BASE}/realtime/session`, {
+                method: 'POST',
+                body: form,
+            });
+            const payload = await response.json();
+            if (!response.ok) {
+                throw new Error(payload.detail || 'Failed to create realtime session');
+            }
+            return payload;
+        }
+
+        function cleanupRealtimeAudioGraph() {
+            if (realtimeAudioContext) {
+                realtimeAudioContext.close().catch(() => {});
+                realtimeAudioContext = null;
+            }
+        }
+
+        function estimateRealtimeGeneratedFps() {
+            if (realtimeFrameTimestamps.length < 2) {
+                return 0;
+            }
+            const first = realtimeFrameTimestamps[0];
+            const last = realtimeFrameTimestamps[realtimeFrameTimestamps.length - 1];
+            const dt = last - first;
+            if (dt <= 0) {
+                return 0;
+            }
+            return ((realtimeFrameTimestamps.length - 1) * 1000.0) / dt;
+        }
+
+        async function waitForFrameGeneration(frameCountAtStart, timeoutMs = 4000) {
+            const start = Date.now();
+            while (Date.now() - start < timeoutMs) {
+                if (realtimeFramesReceived > frameCountAtStart) {
+                    return true;
+                }
+                if (!realtimeSocket || realtimeSocket.readyState !== WebSocket.OPEN) {
+                    return false;
+                }
+                await new Promise(resolve => setTimeout(resolve, 25));
+            }
+            return false;
+        }
+
+        async function fetchTtsAudioBlob(text, voice, rate) {
+            const form = new FormData();
+            form.append('text', text);
+            form.append('voice', voice || '');
+            form.append('rate', String(rate));
+
+            const response = await fetch(`${API_BASE}/realtime/tts`, {
+                method: 'POST',
+                body: form,
+            });
+
+            if (!response.ok) {
+                let detail = 'TTS request failed';
+                try {
+                    const payload = await response.json();
+                    detail = payload.detail || detail;
+                } catch (error) {
+                    console.error('Could not parse TTS error response:', error);
+                }
+                throw new Error(detail);
+            }
+
+            return await response.blob();
+        }
+
+        function audioBufferToMonoF32(decoded) {
+            const channels = decoded.numberOfChannels || 1;
+            const length = decoded.length || 0;
+            if (length <= 0) {
+                return new Float32Array(0);
+            }
+
+            if (channels === 1) {
+                return new Float32Array(decoded.getChannelData(0));
+            }
+
+            const out = new Float32Array(length);
+            for (let c = 0; c < channels; c += 1) {
+                const data = decoded.getChannelData(c);
+                for (let i = 0; i < length; i += 1) {
+                    out[i] += data[i];
+                }
+            }
+            const inv = 1.0 / channels;
+            for (let i = 0; i < length; i += 1) {
+                out[i] *= inv;
+            }
+            return out;
+        }
+
+        function resampleLinearMonoTo16k(input, inputSampleRate) {
+            if (!input || input.length === 0) {
+                return new Float32Array(0);
+            }
+            const srcSr = Number(inputSampleRate || 0);
+            if (!Number.isFinite(srcSr) || srcSr <= 0) {
+                throw new Error(`Invalid source sample rate: ${inputSampleRate}`);
+            }
+            if (Math.abs(srcSr - 16000) < 1e-3) {
+                return new Float32Array(input);
+            }
+
+            const outLength = Math.max(1, Math.round((input.length * 16000) / srcSr));
+            const out = new Float32Array(outLength);
+            const scale = (input.length - 1) / Math.max(1, outLength - 1);
+            for (let i = 0; i < outLength; i += 1) {
+                const pos = i * scale;
+                const i0 = Math.floor(pos);
+                const i1 = Math.min(i0 + 1, input.length - 1);
+                const frac = pos - i0;
+                out[i] = (input[i0] * (1.0 - frac)) + (input[i1] * frac);
+            }
+            return out;
+        }
+
+        function decodeTo16kMono(decodedAudioBuffer) {
+            const mono = audioBufferToMonoF32(decodedAudioBuffer);
+            return resampleLinearMonoTo16k(mono, decodedAudioBuffer.sampleRate);
+        }
+
+        function playAudioBlobWithDelay(audioBuffer, delaySec = 0) {
+            if (!realtimeAudioContext) {
+                return;
+            }
+            const gain = realtimeAudioContext.createGain();
+            gain.gain.value = 1.0;
+            const source = realtimeAudioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(gain);
+            gain.connect(realtimeAudioContext.destination);
+            source.start(realtimeAudioContext.currentTime + delaySec);
+        }
+
+        async function streamPcm16kToRealtimeSocket(pcm16k, options = {}) {
+            const chunkMs = Number(options.chunkMs || 40);
+            const chunkSamples = Math.max(1, Math.floor((16000 * chunkMs) / 1000));
+            const pace = options.pace !== false;
+            const autoSync = options.autoSync === true;
+            let fpsTarget = Number(options.fpsTarget || realtimeRequestedFps || 15);
+            const frameCountAtStart = Number(options.frameCountAtStart || realtimeFramesReceived);
+            const adaptiveSync = options.adaptiveSync === true;
+            const onAdaptiveEvent = typeof options.onAdaptiveEvent === 'function' ? options.onAdaptiveEvent : null;
+            let sentSamples = 0;
+            const startedAt = performance.now();
+            let driftSumSec = 0.0;
+            let driftCount = 0;
+            let driftMaxSec = 0.0;
+            let lastAdaptiveCheckAt = 0.0;
+
+            while (sentSamples < pcm16k.length) {
+                if (!realtimeSocket || realtimeSocket.readyState !== WebSocket.OPEN) {
+                    throw new Error('Realtime socket closed while streaming TTS audio');
+                }
+
+                if (pace) {
+                    const elapsedSec = Math.max(0.0, (performance.now() - startedAt) / 1000.0);
+                    // Keep audio pacing tied to real time, not generated-frame count.
+                    // This prevents autosync from making long utterances feel accelerated.
+                    const leadSec = autoSync ? 0.35 : 0.12;
+                    const maxAudioSec = elapsedSec + leadSec;
+                    const sentSec = sentSamples / 16000.0;
+                    if (sentSec > maxAudioSec) {
+                        const waitMs = Math.min(50, Math.max(2, Math.round((sentSec - maxAudioSec) * 1000)));
+                        await new Promise(resolve => setTimeout(resolve, waitMs));
+                        continue;
+                    }
+                }
+
+                if (adaptiveSync) {
+                    const nowMs = performance.now();
+                    if ((nowMs - lastAdaptiveCheckAt) >= 250.0) {
+                        lastAdaptiveCheckAt = nowMs;
+                        const fpsNow = Math.max(1.0, Number(estimateRealtimeGeneratedFps() || fpsTarget || 7));
+                        const producedFrames = Math.max(0, realtimeFramesReceived - frameCountAtStart);
+                        const producedSec = producedFrames / fpsNow;
+                        const sentSec = sentSamples / 16000.0;
+                        const driftSec = Math.max(0.0, sentSec - producedSec);
+
+                        driftSumSec += driftSec;
+                        driftCount += 1;
+                        driftMaxSec = Math.max(driftMaxSec, driftSec);
+
+                        const delayInput = document.getElementById('realtimeAudioDelayMs');
+                        const currentDelayMs = Number(delayInput.value || 600);
+                        const suggestedDelayMs = Math.max(300, Math.min(1300, Math.round(600 + (driftSec * 550))));
+                        const nextDelayMs = Math.round((currentDelayMs * 0.82) + (suggestedDelayMs * 0.18));
+                        delayInput.value = String(nextDelayMs);
+
+                        if (driftSec > 0.90 && fpsTarget > 6 && (nowMs - realtimeLastAdaptiveFpsChangeAt) > 1800.0) {
+                            fpsTarget = Math.max(6, fpsTarget - 1);
+                            realtimeRequestedFps = fpsTarget;
+                            realtimeLastAdaptiveFpsChangeAt = nowMs;
+                            document.getElementById('realtimeFps').value = String(fpsTarget);
+                            sendRealtimeConfigUpdate();
+                            if (onAdaptiveEvent) {
+                                onAdaptiveEvent({ type: 'fps_drop', fps: fpsTarget, driftSec });
+                            }
+                        }
+                    }
+                }
+
+                const end = Math.min(sentSamples + chunkSamples, pcm16k.length);
+                const chunk = pcm16k.subarray(sentSamples, end);
+                const chunkBytes = chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength);
+                realtimeSocket.send(chunkBytes);
+                sentSamples = end;
+            }
+
+            return {
+                avgDriftSec: driftCount > 0 ? (driftSumSec / driftCount) : 0.0,
+                maxDriftSec: driftMaxSec,
+                finalFpsTarget: fpsTarget,
+            };
+        }
+
+        async function speakTextToAvatar() {
+            if (!realtimeSocket || realtimeSocket.readyState !== WebSocket.OPEN) {
+                alert('Start realtime first, then use TTS.');
+                return;
+            }
+            if (!realtimeAudioContext) {
+                alert('Realtime audio context is not initialized.');
+                return;
+            }
+            if (realtimeTtsStreaming) {
+                return;
+            }
+
+            const text = (document.getElementById('realtimeTtsText').value || '').trim();
+            const voice = document.getElementById('realtimeTtsVoice').value || '';
+            const rate = Number(document.getElementById('realtimeTtsRate').value || 125);
+            const playAudio = document.getElementById('realtimePlayAudio').checked;
+            const autoSync = document.getElementById('realtimeAutoSync').checked;
+            const cpuAutoMode = isCpuAutoSyncModeEnabled();
+            const audioDelayMs = Number(document.getElementById('realtimeAudioDelayMs').value || 0);
+
+            if (!text) {
+                alert('Enter text for TTS.');
+                return;
+            }
+            if (rate < 80 || rate > 320) {
+                alert('TTS rate must be between 80 and 320.');
+                return;
+            }
+
+            document.getElementById('speakTextBtn').disabled = true;
+            realtimeTtsStreaming = true;
+            setRealtimeStatus('Generating TTS audio...');
+
+            try {
+                if (cpuAutoMode) {
+                    applyCpuAutoSyncPreset(false);
+                }
+                // Keep speech speed fixed to exactly what user configured.
+                const requestedRate = Math.max(80, Math.min(320, Math.round(rate)));
+                const wavBlob = await fetchTtsAudioBlob(text, voice, requestedRate);
+                const wavArrayBuffer = await wavBlob.arrayBuffer();
+                const decoded = await realtimeAudioContext.decodeAudioData(wavArrayBuffer.slice(0));
+
+                const pcm16k = decodeTo16kMono(decoded);
+                if (!pcm16k || pcm16k.length === 0) {
+                    throw new Error('Could not convert TTS audio to 16 kHz.');
+                }
+                const playbackBuffer = realtimeAudioContext.createBuffer(1, pcm16k.length, 16000);
+                playbackBuffer.getChannelData(0).set(pcm16k);
+
+                const frameStart = realtimeFramesReceived;
+                setRealtimeStatus(autoSync ? 'Streaming TTS with auto-sync...' : 'Streaming TTS audio to avatar...');
+
+                const streamPromise = streamPcm16kToRealtimeSocket(pcm16k, {
+                    chunkMs: 40,
+                    pace: true,
+                    autoSync,
+                    adaptiveSync: cpuAutoMode,
+                    fpsTarget: realtimeRequestedFps,
+                    frameCountAtStart: frameStart,
+                    onAdaptiveEvent: (evt) => {
+                        if (evt && evt.type === 'fps_drop') {
+                            setRealtimeStatus(`Auto-sync tuned FPS to ${evt.fps} due to drift (${evt.driftSec.toFixed(2)}s).`);
+                        }
+                    },
+                });
+
+                let usedDelay = audioDelayMs;
+                if (cpuAutoMode) {
+                    usedDelay = Math.max(600, usedDelay);
+                }
+                if (playAudio) {
+                    if (autoSync && !cpuAutoMode) {
+                        const hadFrame = await waitForFrameGeneration(frameStart, 4000);
+                        if (hadFrame) {
+                            const fpsNow = Number(estimateRealtimeGeneratedFps() || realtimeRequestedFps || 8);
+                            usedDelay = Math.max(120, Math.min(900, Math.round((1000 / Math.max(1, fpsNow)) * 1.4)));
+                        }
+                    }
+                    if (cpuAutoMode) {
+                        usedDelay = Number(document.getElementById('realtimeAudioDelayMs').value || usedDelay || 600);
+                    }
+                    playAudioBlobWithDelay(playbackBuffer, usedDelay / 1000.0);
+                }
+
+                const streamSummary = await streamPromise;
+
+                const genFps = estimateRealtimeGeneratedFps();
+                if (autoSync) {
+                    const fpsText = genFps ? genFps.toFixed(1) : String(realtimeRequestedFps);
+                    const driftText = streamSummary ? streamSummary.avgDriftSec.toFixed(2) : "0.00";
+                    setRealtimeStatus(`TTS synced. gen_fps=${fpsText}, delay=${Math.round(usedDelay)}ms, rate=${requestedRate}, drift=${driftText}s. Avatar returned to idle.`);
+                } else {
+                    setRealtimeStatus('TTS streaming complete. Avatar returned to idle.');
+                }
+
+                if (cpuAutoMode && streamSummary && streamSummary.avgDriftSec <= 0.35) {
+                    const headMotionToggle = document.getElementById('realtimeHeadMotion');
+                    const headMotionStrengthInput = document.getElementById('realtimeHeadMotionStrength');
+                    if (!headMotionToggle.checked) {
+                        headMotionToggle.checked = true;
+                        headMotionStrengthInput.value = "0.25";
+                        sendRealtimeConfigUpdate();
+                        setRealtimeStatus(`CPU auto-sync stable. Re-enabled head motion at 0.25.`);
+                    }
+                }
+            } catch (error) {
+                setRealtimeStatus(`TTS failed: ${error.message}`);
+            } finally {
+                realtimeTtsStreaming = false;
+                if (isRealtimeSocketOpen()) {
+                    document.getElementById('speakTextBtn').disabled = false;
+                    startRealtimeIdleLoop();
+                }
+            }
+        }
+
+        async function startRealtime() {
+            applyCpuAutoSyncPreset(false);
+            const avatarFile = document.getElementById('realtimeAvatarFile').files[0];
+            const fps = Number(document.getElementById('realtimeFps').value || 15);
+            const headMotion = document.getElementById('realtimeHeadMotion').checked;
+            const headMotionStrength = Number(document.getElementById('realtimeHeadMotionStrength').value || 0.55);
+
+            if (!avatarFile) {
+                alert('Please select an avatar image for realtime mode.');
+                return;
+            }
+            if (fps < 5 || fps > 30) {
+                alert('Realtime FPS must be between 5 and 30.');
+                return;
+            }
+            if (headMotionStrength < 0 || headMotionStrength > 1.5) {
+                alert('Head motion strength must be between 0.0 and 1.5.');
+                return;
+            }
+            if (realtimeSocket) {
+                alert('Realtime session is already running.');
+                return;
+            }
+
+            stopRealtimeIdleLoop();
+            realtimeAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            realtimeRequestedFps = fps;
+            realtimeFramesReceived = 0;
+            realtimeFrameTimestamps = [];
+
+            setRealtimeStatus('Creating realtime session...');
+            try {
+                const session = await createRealtimeSession(
+                    avatarFile,
+                    fps,
+                    16000,
+                    headMotion,
+                    headMotionStrength
+                );
+
+                realtimeSessionId = session.session_id;
+
+                realtimeSocket = new WebSocket(session.ws_url);
+                realtimeSocket.binaryType = 'blob';
+
+                realtimeSocket.onopen = () => {
+                    setRealtimeButtons(true);
+                    startRealtimeIdleLoop();
+                    setRealtimeStatus(`Realtime running at ${fps} FPS (idle active).`);
+                };
+
+                realtimeSocket.onmessage = (event) => {
+                    if (typeof event.data === 'string') {
+                        try {
+                            const msg = JSON.parse(event.data);
+                            if (msg.type === 'error') {
+                                setRealtimeStatus(`Realtime error: ${msg.message}`);
+                            }
+                        } catch {
+                            setRealtimeStatus('Received invalid control message from server.');
+                        }
+                        return;
+                    }
+
+                    if (realtimeLastFrameUrl) {
+                        URL.revokeObjectURL(realtimeLastFrameUrl);
+                    }
+                    realtimeLastFrameUrl = URL.createObjectURL(event.data);
+                    document.getElementById('realtimeFrame').src = realtimeLastFrameUrl;
+
+                    const now = performance.now();
+                    realtimeFramesReceived += 1;
+                    realtimeFrameTimestamps.push(now);
+                    while (realtimeFrameTimestamps.length > 0 && (now - realtimeFrameTimestamps[0]) > 5000) {
+                        realtimeFrameTimestamps.shift();
+                    }
+                };
+
+                realtimeSocket.onerror = () => {
+                    setRealtimeStatus('Realtime websocket error.');
+                };
+
+                realtimeSocket.onclose = () => {
+                    stopRealtimeIdleLoop();
+                    setRealtimeStatus('Realtime stopped.');
+                    setRealtimeButtons(false);
+                    cleanupRealtimeAudioGraph();
+                    realtimeTtsStreaming = false;
+                    realtimeSocket = null;
+                    realtimeSessionId = null;
+                };
+            } catch (error) {
+                stopRealtimeIdleLoop();
+                setRealtimeStatus(`Realtime start failed: ${error.message}`);
+                setRealtimeButtons(false);
+                cleanupRealtimeAudioGraph();
+                realtimeSocket = null;
+                realtimeSessionId = null;
+            }
+        }
+
+        async function stopRealtime() {
+            const sessionId = realtimeSessionId;
+            stopRealtimeIdleLoop();
+
+            if (realtimeSocket && realtimeSocket.readyState === WebSocket.OPEN) {
+                try {
+                    realtimeSocket.send(JSON.stringify({ type: 'close' }));
+                } catch (_) {}
+            }
+
+            if (realtimeSocket) {
+                realtimeSocket.close();
+            }
+            cleanupRealtimeAudioGraph();
+
+            realtimeSocket = null;
+            realtimeSessionId = null;
+            realtimeTtsStreaming = false;
+            setRealtimeButtons(false);
+            setRealtimeStatus('Stopping realtime session...');
+
+            if (sessionId) {
+                try {
+                    await fetch(`${API_BASE}/realtime/session/${sessionId}`, { method: 'DELETE' });
+                } catch (error) {
+                    console.error('Realtime session delete failed:', error);
+                }
+            }
+
+            if (realtimeLastFrameUrl) {
+                URL.revokeObjectURL(realtimeLastFrameUrl);
+                realtimeLastFrameUrl = null;
+            }
+        }
+
         document.getElementById('videoFile').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -380,8 +1144,7 @@
                     e.target.value = '';
                     return;
                 }
-                
-                // Check file size (max 100MB)
+
                 if (file.size > 100 * 1024 * 1024) {
                     alert('Video file too large. Please select a file smaller than 100MB');
                     e.target.value = '';
@@ -399,8 +1162,7 @@
                     e.target.value = '';
                     return;
                 }
-                
-                // Check file size (max 50MB)
+
                 if (file.size > 50 * 1024 * 1024) {
                     alert('Audio file too large. Please select a file smaller than 50MB');
                     e.target.value = '';
@@ -409,17 +1171,33 @@
             }
         });
 
-        // Check API status on page load
-        window.onload = async function() {
-            try {
-                const response = await fetch(`${API_BASE}/`);
-                const data = await response.json();
-                console.log('API Status:', data);
-            } catch (error) {
-                console.error('API not available:', error);
-                showError('⚠️ API server not available. Please ensure the FastAPI server is running on localhost:8000');
+        document.getElementById('realtimeHeadMotion').addEventListener('change', function() {
+            sendRealtimeConfigUpdate();
+        });
+        document.getElementById('realtimeHeadMotionStrength').addEventListener('change', function() {
+            sendRealtimeConfigUpdate();
+        });
+        document.getElementById('realtimeFps').addEventListener('change', function() {
+            sendRealtimeConfigUpdate();
+        });
+        document.getElementById('realtimeAutoSync').addEventListener('change', function() {
+            updateAutoSyncUi();
+            if (isCpuAutoSyncModeEnabled()) {
+                realtimeCpuPresetApplied = false;
+                applyCpuAutoSyncPreset(true);
             }
-        };
+        });
+        document.getElementById('realtimeCpuAutoMode').addEventListener('change', function() {
+            if (document.getElementById('realtimeCpuAutoMode').checked) {
+                realtimeCpuPresetApplied = false;
+                applyCpuAutoSyncPreset(true);
+                setRealtimeStatus('CPU auto-sync mode enabled. Applied preset: FPS 7, Delay 600ms, Rate 125, Head motion off.');
+            } else {
+                setRealtimeStatus('CPU auto-sync mode disabled.');
+            }
+        });
+        applyCpuAutoSyncPreset(false);
+        updateAutoSyncUi();
     </script>
 </body>
 </html>
